@@ -1,0 +1,131 @@
+# Virtual Touch default configuration.
+#
+# Copy to your user config with `virtual-touch config --init`, then edit.
+# Values set to `auto` are detected on every start (see `virtual-touch doctor`).
+# Distances marked "palm units" are relative to your palm length
+# (wrist -> middle-finger knuckle), so they work at any distance from the camera.
+
+camera:
+  index: auto            # auto = first working camera, or an integer (see `virtual-touch list-cameras`)
+  # Capture size. auto = the camera's largest format, which usually covers the most
+  # sensor area (widest field of view). Many laptop cameras crop to 16:9 at 640x480/720p,
+  # cutting off the area below your face where your hands are.
+  width: auto
+  height: auto
+  fps: 30
+  process_width: 640     # frames are downscaled to this width before tracking (speed)
+  mirror: true           # flip horizontally so the preview behaves like a mirror
+
+tracking:
+  model_path: auto       # auto = download hand_landmarker.task once into the user cache
+  max_hands: 2
+  min_detection_confidence: 0.6
+  min_presence_confidence: 0.6
+  min_tracking_confidence: 0.5
+
+hands:
+  dominant: right        # right | left — the hand that drives the pointer
+
+screen:
+  # auto = detected at start. Override only if detection is wrong, e.g.
+  # displays: [{x: 0, y: 0, width: 1440, height: 900}]
+  displays: auto
+  reference_height: auto # pixels/points used to scale pointer & scroll gain (auto = main display height)
+
+pointer:
+  mode: relative         # relative (trackpad-like, with clutch) | absolute (hand position = screen position)
+  speed: 1.0             # overall multiplier
+  min_gain: 1.5          # screen-heights per frame-height of hand movement, when moving slowly (precision)
+  max_gain: 4.0          # ... when moving fast (acceleration)
+  slow_velocity: 0.05    # hand speed (frame-heights / s) at/below which min_gain applies
+  fast_velocity: 1.0     # hand speed at/above which max_gain applies
+  deadzone: 0.0015       # ignore hand jitter smaller than this (frame-heights per frame)
+  distance_compensation: true  # same hand movement => same cursor movement at any distance from camera
+  reference_palm: 0.22   # palm length (frame-heights) treated as "normal distance"
+  smoothing_min_cutoff: 1.2    # One-Euro filter: lower = smoother but laggier
+  smoothing_beta: 8.0          # One-Euro filter: higher = less lag when moving fast
+  absolute_region: [0.2, 0.15, 0.8, 0.75]   # absolute mode: camera region [x0, y0, x1, y1] mapped to the screen
+  # Edge push: compensates for a small camera field of view. Keep your knuckles inside
+  # this box [x0, y0, x1, y1] (fractions of the camera image) to move normally; push them
+  # past an edge and the cursor keeps gliding that way, faster the further out you go.
+  edge_push: true
+  edge_region: [0.18, 0.15, 0.82, 0.85]
+  edge_speed: 1.5        # screen-heights per second at the frame edge
+  edge_dwell: 0.15       # s outside the box before gliding starts (avoids accidental drift)
+
+gestures:
+  pinch_close: 0.28      # thumb-to-fingertip distance (palm units) that counts as touching
+  pinch_open: 0.40       # distance that counts as released (hysteresis)
+  click_rewind: 0.08     # s, on pinch the cursor jumps back this far in time so clicks land on target
+  finger_straightness: 0.80   # 0..1, how straight a finger must be to count as extended
+  finger_curl: 1.2       # fingertip-to-wrist distance (palm units) below which a finger counts as curled
+  pose_stable_frames: 2  # frames a finger pose must persist before it is accepted
+  tap_max_time: 0.28     # s, pinch shorter than this = click
+  drag_hold_time: 0.28   # s, pinch held longer than this = mouse down (drag)
+  drag_start_distance: 0.25    # palm units of movement during a pinch that starts a drag immediately
+  double_click_time: 0.45      # s between taps for double / triple click
+  right_click_max_time: 0.6    # s, thumb+middle tap shorter than this = right click
+  lost_hand_grace: 0.25  # s to wait before releasing a drag when the hand disappears
+  swipe_distance: 1.0    # palm units a 3-finger / open-palm flick must travel ...
+  swipe_window: 0.35     # ... within this many seconds (slower movement just moves the pointer)
+  swipe_cooldown: 0.7    # s before another swipe can fire
+  zoom_step: 0.12        # relative size change per zoom step (one hand: palm size, two hands: hand distance)
+  rotate_step: 25        # degrees per rotate step
+  pause_hold_time: 1.5   # s both palms must be held open to pause/resume
+
+scroll:
+  speed: 2.0             # screen-heights of scroll per frame-height of finger movement
+  natural: true          # true: content follows your fingers (like a trackpad)
+  invert_x: false        # flip horizontal scroll if it feels backwards on your system
+  inertia: true          # keep scrolling briefly after you stop, like a trackpad flick
+  inertia_decay: 0.35    # s, time constant of the inertia slowdown
+  pixels_per_notch: 60   # Windows/Linux: pixels that equal one mouse-wheel notch
+
+# Keyboard shortcut fired for each discrete gesture, per OS. Use null to disable.
+# Keys: cmd, ctrl, alt (option), shift, win, tab, space, enter, esc, up/down/left/right,
+# home, end, pageup, pagedown, f1..f20, and single characters.
+actions:
+  darwin:
+    swipe3_left: ctrl+right      # next Space / full-screen app
+    swipe3_right: ctrl+left      # previous Space
+    swipe3_up: ctrl+up           # Mission Control
+    swipe3_down: ctrl+down       # App Exposé
+    swipe4_left: cmd+]           # forward (like a two-finger page swipe)
+    swipe4_right: cmd+[          # back
+    swipe4_up: ctrl+up           # Mission Control
+    swipe4_down: f11             # Show Desktop
+    zoom_in: cmd+=
+    zoom_out: cmd+-
+    rotate_cw: cmd+r             # Preview / Photos
+    rotate_ccw: cmd+l
+  win32:
+    swipe3_left: ctrl+win+right  # next virtual desktop
+    swipe3_right: ctrl+win+left
+    swipe3_up: win+tab           # Task View
+    swipe3_down: win+d           # Show desktop
+    swipe4_left: alt+right       # forward
+    swipe4_right: alt+left       # back
+    swipe4_up: win+tab
+    swipe4_down: win+d
+    zoom_in: ctrl+=
+    zoom_out: ctrl+-
+    rotate_cw: ctrl+r            # Photos
+    rotate_ccw: ctrl+shift+r
+  linux:
+    swipe3_left: ctrl+alt+right
+    swipe3_right: ctrl+alt+left
+    swipe3_up: win
+    swipe3_down: win+d
+    swipe4_left: alt+right
+    swipe4_right: alt+left
+    swipe4_up: win
+    swipe4_down: win+d
+    zoom_in: ctrl+=
+    zoom_out: ctrl+-
+    rotate_cw: null
+    rotate_ccw: null
+
+app:
+  preview: true          # show the camera window with landmarks and status
+  dry_run: false         # recognise gestures but do not touch the real mouse/keyboard
+  pause_hotkey: <ctrl>+<alt>+p   # global hotkey (pynput syntax); null to disable

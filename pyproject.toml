@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "virtual-touch"
+version = "0.1.0"
+description = "Use your webcam as a multi-touch trackpad: hand-tracking gestures for move, click, drag, scroll, zoom, rotate and swipes on macOS and Windows."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9,<3.13"
+authors = [{ name = "Vivek Hari" }]
+keywords = ["hand-tracking", "gesture", "trackpad", "mediapipe", "accessibility", "touchless"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Topic :: Desktop Environment",
+  "Topic :: Scientific/Engineering :: Image Recognition",
+]
+dependencies = [
+  "mediapipe>=0.10.14",
+  "opencv-python>=4.8",
+  "numpy>=1.24",
+  "pynput>=1.7.6",
+  "pyyaml>=6.0",
+  "platformdirs>=3.0",
+  "pyobjc-framework-Quartz>=9.0; sys_platform == 'darwin'",
+  "pyobjc-framework-ApplicationServices>=9.0; sys_platform == 'darwin'",
+  "screeninfo>=0.8; sys_platform == 'linux'",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+virtual-touch = "virtual_touch.cli:main"
+vtouch = "virtual_touch.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/IndominusPsych/virtual-touch"
+Issues = "https://github.com/IndominusPsych/virtual-touch/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/virtual_touch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
